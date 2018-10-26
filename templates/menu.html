@@ -1,19 +1,28 @@
 <!DOCTYPE html>
+{% load static %}
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<script type="text/javascript" src="scripts/jquery/jquery-1.7.1.js"></script>
-<link href="style/authority/basic_layout.css" rel="stylesheet" type="text/css">
-<link href="style/authority/common_style.css" rel="stylesheet" type="text/css">
-<script type="text/javascript" src="scripts/authority/commonAll.js"></script>
-<script type="text/javascript" src="scripts/fancybox/jquery.fancybox-1.3.4.js"></script>
-<script type="text/javascript" src="scripts/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-<link rel="stylesheet" type="text/css" href="style/authority/jquery.fancybox-1.3.4.css" media="screen"></link>
-<script type="text/javascript" src="scripts/artDialog/artDialog.js?skin=default"></script>
+<script type="text/javascript" src="{% static 'scripts/jquery/jquery-1.7.1.js' %}"></script>
+<link href="{% static 'style/authority/basic_layout.css' %}" rel="stylesheet" type="text/css">
+<link href="{% static 'style/authority/common_style.css' %}" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="{% static 'scripts/authority/commonAll.js' %}"></script>
+<script type="text/javascript" src="{% static 'scripts/fancybox/jquery.fancybox-1.3.4.js' %}"></script>
+<script type="text/javascript" src="{% static 'scripts/fancybox/jquery.fancybox-1.3.4.pack.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'style/authority/jquery.fancybox-1.3.4.css' %}" media="screen"></link>
+<script type="text/javascript" src="{% static 'scripts/artDialog/artDialog.js?skin=default'%}"></script>
 <title>百智招聘</title>
 <script type="text/javascript">
 </script>
 <style>
+    .mi {
+width: 200px;
+              display: -webkit-box;
+             -webkit-box-orient: vertical;
+             -webkit-line-clamp: 3;
+            overflow: hidden;
+}
+
 </style>
 </head>
 <body>
@@ -26,13 +35,13 @@
 					<div id="box_border">
 						<div id="box_top">搜索</div>
 						<div id="box_center">
-							<select name="fangyuanEntity.fyXqCode" id="fyXq" class="ui_select01" onchange="getFyDhListByFyXqCode();">
+							<select name="fangyuanEntity.fyXqCode" id="fyXq" class="ui_select01" >
                                 <option value=""
                                 >--请选择--</option>
-                                <option value="">城市</option>
-                                <option value="">职位</option>
+                                <option value="city" {% if page_chooise == 'city' %}selected{% endif %}>城市</option>
+                                <option value="job" {% if page_chooise == 'job' %}selected{% endif %}>职位</option>
                             </select>
-							<input type="text" id="fyZldz" name="fangyuanEntity.fyZldz" class="ui_input_txt02" />
+							<input type="text" id="fyZldz" name="fangyuanEntity.fyZldz" class="ui_input_txt02" {% if page_val %} value="{{ page_val }}{% endif %}"/>
 							<input type="button" value="查询" class="ui_input_btn01" onclick="search();" /> 
 						</div>
 					</div>
@@ -42,8 +51,6 @@
 				<div class="ui_tb">
 					<table class="table" cellspacing="0" cellpadding="0" width="100%" align="center" border="0">
 						<tr>
-							
-						
 							<th>职位</th>
 							<th>公司</th>
 							<th>月薪</th>
@@ -53,42 +60,51 @@
 							<th>公司地点</th>
 							<th>部门</th>
 						</tr>
-							<tr>
-								
-								<td>AI</td>
-								<td>百度</td>
-								<td>30k-50k</td>
-								<td>没要求</td>
-								<td>没要求</td>
-								<td>没要求</td>
-								<td>北京</td>
-								<td>研发部</td>
-					
+                        {% for foo in page %}
+                            <tr>
+
+								<td>{{ foo.position }}</td>
+								<td>{{ foo.company }}</td>
+								<td>{{ foo.salary }}</td>
+								<td class="mi" title="{{ foo.job_info }}">{{ foo.job_info }}</td>
+								<td>{{ foo.experience }}</td>
+								<td>{{ foo.education }}</td>
+								<td>{{ foo.work_addr }}</td>
+								<td>{{ foo.department }}</td>
 							</tr>
-		
+                        {% endfor %}
+
+
+
 					</table>
 				</div>
 				<div class="ui_tb_h30">
 					<div class="ui_flt" style="height: 30px; line-height: 30px;">
 						共有
-						<span class="ui_txt_bold04">90</span>
+						<span class="ui_txt_bold04">{{ page.paginator.count }}</span>
 						条记录，当前第
-						<span class="ui_txt_bold04">1
+						<span class="ui_txt_bold04">{{ page.number }}
 						/
-						9</span>
+						{{ page.paginator.num_pages }}</span>
 						页
 					</div>
 					<div class="ui_frt">
 						<!--    如果是第一页，则只显示下一页、尾页 -->
-						
-							<input type="button" value="首页" class="ui_input_btn01" />
-							<input type="button" value="上一页" class="ui_input_btn01" />
+						{% if page.number != 1 %}
+							<input type="button" value="首页" class="ui_input_btn01" onclick="jumpNormalPage(1)"/>
+                        {% endif %}
+                        {% if page.has_previous %}
+							<input type="button" value="上一页" class="ui_input_btn01" onclick="jumpNormalPage({{ page.previous_page_number }});"/>
+                        {% endif %}
+                    {% if page.has_next %}
 							<input type="button" value="下一页" class="ui_input_btn01"
-								onclick="jumpNormalPage(2);" />
+								onclick="jumpNormalPage({{ page.next_page_number }});" />
+                    {% endif %}
+                    {% if page.number != page.paginator.num_pages %}
 							<input type="button" value="尾页" class="ui_input_btn01"
-								onclick="jumpNormalPage(9);" />
+								onclick="jumpNormalPage({{ page.paginator.count }});" />
 							<!--     如果是最后一页，则只显示首页、上一页 -->
-						
+						{% endif %}
 						转到第<input type="text" id="jumpNumTxt" class="ui_input_txt01" />页
 							 <input type="button" class="ui_input_btn01" value="跳转" onclick="jumpInputPage(9);" />
 					</div>
@@ -96,6 +112,17 @@
 			</div>
 		</div>
 	</form>
-
+<script>
+    function jumpNormalPage(page_num) {
+        var chooice = $('#fyXq').val()
+        var vals = $('#fyZldz').val()
+        window.location.href='{% url 'sys_main:meue_page' %}?page_num='+page_num+'&'+chooice+'='+vals+'&page_chooise='+chooice+'&page_val='+vals
+    }
+    function search() {
+        var chooice = $('#fyXq').val()
+        var vals = $('#fyZldz').val()
+        window.location.href='{% url 'sys_main:meue_page' %}?'+chooice+'='+vals+'&page_chooise='+chooice+'&page_val='+vals
+    }
+</script>
 </body>
 </html>
