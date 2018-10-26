@@ -25,7 +25,7 @@ SECRET_KEY = '%b52366+r@o-!@dlb8fiafk+g6)h%scgq%uwh6(-#rg8*89&c3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'sys_main',
+    'middleware_app',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'middleware_app.user_info_middleware.MyMiddleware2',
 ]
 
 ROOT_URLCONF = 'spider_team_project.urls'
