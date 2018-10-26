@@ -2,6 +2,7 @@ import json
 
 import happybase
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 from django.shortcuts import render
 
 # Create your views here.
@@ -34,7 +35,7 @@ def meue_page(request):
         table=conn.table('spiderteam:t_recruit')
         query_str=None
         if city and job:
-            query_str = "RowFilter (=,'substring:"+city+":"+job+"')"
+            query_str = "RowFilter (=,'regexstring:"+city+".*:.*"+job+".*')"
         elif job:
             query_str = "RowFilter (=,'substring:"+job+"')"
         elif city:
@@ -51,9 +52,10 @@ def meue_page(request):
         page_num = 1
     page = pagtor.page(page_num)
     return render(request,'menu.html',{'page':page,'page_chooise':page_chooise,'page_val':page_val})
-
+#发布招聘信息页面
 def add_page(request):
     return render(request,'add.html')
+#存储招聘信息
 def add_logic(request):
     position = request.POST.get('position')
     salary = request.POST.get('price')
@@ -122,6 +124,35 @@ def add_logic(request):
                        "common:company_size": company_size, "common:main_business": main_business, "common:com_net": com_net})
 
     return render(request,'add.html')
+
+#ip地址分布报表页面
+def map_page(request):
+    return render(request,'ip_map.html')
+#获取ip_map数据
+def get_map_datas(request):
+    ip_dict={}
+    conn = happybase.Connection(host='192.168.0.99',port=9090)
+    table = conn.table('spiderteam:t_logs')
+    for k,v in table.scan(columns=["info:request_city"]):
+        for x,y in v.items():
+            print(x,str(y,'utf-8'))
+            city = str(y,'utf-8')
+
+            if city in ip_dict:
+                count = ip_dict.get(city)
+                ip_dict[city]=count+1
+            else:
+                ip_dict[city]=1
+    result_list=[]
+
+    for k,v in ip_dict.items():
+        result_dict = {}
+        result_dict['value'] = v
+        result_dict['name']=k
+        result_list.append(result_dict)
+    result={'datas':result_list}
+    print(result)
+    return JsonResponse(result)
 
 
 
