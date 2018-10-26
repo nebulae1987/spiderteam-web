@@ -17,6 +17,8 @@ urlpatterns = [
     path('meue/',views.meue_page,name='meue_page'),
     path('add_page/',views.add_page,name='add_page'),
     path('add_logic/',views.add_logic,name='add_logic'),
+    path('map_page/',views.map_page,name='map_page'),
+    path('get_map_datas/',views.get_map_datas,name='get_map_datas'),
 
 ]
 
