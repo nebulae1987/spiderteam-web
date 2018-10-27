@@ -16,7 +16,7 @@ def loginPage(request):
 
 def loginLogic(request):
     '''
-    登录逻辑处理
+    登录逻辑 处理
     :return:
     '''
     username = request.POST.get('userid')
