@@ -129,4 +129,4 @@ def changePwd(request):
         else:
             return HttpResponse('0')
     except:
-        return HttpResponse('修改异常！请重试')
+        return HttpResponse(' 修改异常！请重试')
