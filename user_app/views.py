@@ -4,7 +4,9 @@ from django.shortcuts import render, redirect
 # Create your views here.
 from user_app.models import User
 
-
+def index(request):
+    '''主页'''
+    return render(request,'index.html')
 def loginPage(request):
     '''
     登录页面

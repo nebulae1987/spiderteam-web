@@ -1,30 +1,42 @@
 <!doctype html>
+{% load static %}
 <html>
 <head>
-<title>Home</title>
+<title>注册</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="keywords" content="" />
+    <script src="{% static 'scripts/jquery/jquery-1.7.1.js' %}"></script>
 <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
 <!-- font files  -->
 <link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
 <link href='https://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 <!-- /font files  -->
 <!-- css files -->
-<link href="css/style.css" rel='stylesheet' type='text/css' media="all" />
+<link href="{% static 'css/style.css' %}" rel='stylesheet' type='text/css' media="all" />
 <!-- /css files -->
 </head>
 <body>
-<h1>Register</h1>
+<h1></h1>
 <div class="log">
 	<div class="content2">
-		<h2>Register</h2>
-		<form>
-			<input type="text" name="userid" value="USERNAME" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'NAME AND SURNAME';}">
-			<input type="tel" name="usrtel" value="PHONE" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'PHONE';}">
-			<input type="email" name="email" value="EMAIL ADDRESS" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'EMAIL ADDRESS';}">
-			<input type="password" name="psw" value="PASSWORD" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'PASSWORD';}">
-			<input type="submit" class="register" value="Register">
+		<h2>注册</h2>
+		<form id="forms">
+            {% csrf_token %}
+			<input type="text" name="userid" id = "userid" value="用户名" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '用户名';}">*
+			<input type="tel" name="usrtel" id="usrtel" value="手机" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '手机';}">*
+			<input type="email" name="email" value="邮箱" id="user_email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '邮箱';} check_email()">*
+            <span style="color: #261131;display: none;" id="email_ok">可用</span>
+            <span style="color: #ff6722;display:none;" id="email_no">不可用</span>
+            <br><span style="color: #fff">选择保密问题：</span><select name="question" id="quest">
+                <option value="city" style="color: #abc">你最喜欢的城市？</option>
+                <option value="teacher" style="color: #abc">你最喜欢的小学班主任？</option>
+                <option value="place" style="color: #abc">你父母相识的地方？</option>
+            </select>*
+			<input type="text" name="answer" id="answer" value="保密答案" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '保密答案';}">*
+			<input type="password" id="password" name="psw" value="......" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '......';}">*
+			<input type="button" class="register" value="注册" id="regist" onclick="go_regist()">
+            <span style="text-align: center;display: none;" id="regist_ok">注册成功！</span>
 		</form>
 	</div>
 	<div class="clear"></div>
@@ -32,6 +44,83 @@
 <div class="footer">
 	<p>Copyright &copy;  <a href="http://www.baizhiedu.com/" target="_blank" title="百知教育">百知教育</a></p>
 </div>
+
+
+<script>
+{#    表单验证：异步注册#}
+    function go_regist() {
+        var re1 = /^[0-9]+$/;
+        var re2 = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/;          //邮箱规则
+        var regEn = /[`~!@#$%^&*()_+<>?:"{},.\/;'[\]]/im;                //特殊字符
+        var regCn = /[·！#￥（——）：；“”‘、，|《。》？、【】[\]]/im;    //特殊字符
+
+        var user_email = $('#user_email').val();
+        var userid = $('#userid').val();
+        var usrtel = $('#usrtel').val();
+        var password = $('#password').val();
+        var answer = $('#answer').val();
+        if(re1.test(userid)){
+            alert('填写正确用户名（用户名不能数字开头！）')
+        }else if(userid.length<6){
+            alert('用户名长度不能小于6位！');
+        }else if(usrtel.length != 11){
+            alert('请填写正确手机号码！');
+        }else if(! re2.test(user_email) || user_email.length<5 ){
+            alert('填写正确邮箱！');
+        }else if(answer.length<2 ){
+            alert('填写保密答案！');
+        }else if(regEn.test(password) || regCn.test(password)){
+            alert('填写正确密码（不能有特殊字符！）');
+        }  else {
+            $.ajax({
+            type:'post',
+            dateType:'json',
+            url:'{% url "user:registLogic" %}',
+            data:new FormData($('#forms').get(0)),
+            success:function (a) {
+                if(a=='success'){
+                    $('#regist_ok').css('display','inline-block');
+                    setTimeout(location.href='{% url "user:loginPage" %}',2000);
+                }else {alert('注册错误，请重试！');}
+            },
+            processData:false,   //进制序列化data
+            contentType:false,   //
+        });
+        }
+    }
+
+
+{#异步检测邮箱可用性#}
+    function check_email() {
+        var re1 = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/;
+        var user_email = $('#user_email').val();
+        if(! re1.test(user_email) || user_email.length<5 ){
+             $('#email_ok').css('display','none');
+             $('#email_no').css('display','inline-block');
+        }else {
+            $('#email_no').css('display','none');
+            $('#email_ok').css('display','none');
+          $.ajax({
+            type:'get',
+            url:'{% url "user:checkEmail" %}',
+            data:'user_email='+user_email,
+            success:function (a) {
+              if (a == 1){
+                  $('#email_no').css('display','none');
+                  $('#email_ok').css('display','inline-block');
+              }
+              else if (a == '0'){
+                  $('#email_ok').css('display','none');
+                  $('#email_no').css('display','inline-block'); }
+            },
+        });
+
+        }
+
+    }
+</script>
+
+
 
 </body>
 </html>

@@ -2,7 +2,7 @@
 {% load static %}
 <html>
 <head>
-<title>登录</title>
+<title>主页</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="keywords" content="" />
@@ -20,18 +20,19 @@
 <h1></h1>
 <div class="log">
 	<div class="content1">
-		<h2>登录</h2>
+		<h2>主页</h2>
 		<form id="forms">
             {% csrf_token %}
-			<input type="text" name="userid" value="USERNAME" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'USERNAME';}">
-			<input type="password" name="psw" value="PASSWORD" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'PASSWORD';}">
+            <div style="margin-top: 30px">
+                <span style="font-size: 24px;color: rgba(48,48,49,0.71);margin-right: 30px;"><a href="{% url 'user:loginPage' %}"  target="_blank">登录</a></span>
+			    <span style="font-size: 24px;color: rgba(48,48,49,0.71);margin-right: 30px;"><a href="{% url 'user:registPage' %}"  target="_blank">注册</a></span>
+			    <span style="font-size: 24px;color: rgba(48,48,49,0.71);margin-right: 30px;"><a href="{% url 'sys_main:sys_main' %}"  target="_blank">查询招聘信息</a></span>
+			    <span style="font-size: 24px;color: rgba(48,48,49,0.71);margin-right: 30px;"><a href="{% url 'reports:reportsPie' %}"  target="_blank">报表</a></span>
+{#			    <span style="font-size: 24px;color: rgba(48,48,49,0.71);margin-right: 30px;"><a href="{% url 'user:forgetPwdPage' %}"  target="_blank">忘记密码</a></span>#}
+            </div>
+
+
 			<div class="button-row">
-				<input type="button" class="sign-in" value="登录" onclick="go_login();">
-				<input type="reset" class="reset" value="重置">
-                <div style=" float: left;margin-top: 30px;margin-left: 40px">
-                    <a href="{% url 'user:registPage' %}" style="color: rgba(48,48,49,0.71);" target="_blank">注册</a></div>
-                <div style=" float: right;margin-top: 30px;margin-right: 40px">
-                    <a href="{% url 'user:forgetPwdPage' %}" style="color: rgba(48,48,49,0.71);" target="_blank">忘记密码？</a></div>
 				<div class="clear"></div>
 			</div>
 		</form>

@@ -2,7 +2,7 @@
 {% load static %}
 <html>
 <head>
-<title>登录</title>
+<title>修改密码</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="keywords" content="" />
@@ -19,51 +19,53 @@
 <body>
 <h1></h1>
 <div class="log">
-	<div class="content1">
-		<h2>登录</h2>
+	<div class="content2">
+		<h2>设置新密码</h2>
 		<form id="forms">
             {% csrf_token %}
-			<input type="text" name="userid" value="USERNAME" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'USERNAME';}">
-			<input type="password" name="psw" value="PASSWORD" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'PASSWORD';}">
-			<div class="button-row">
-				<input type="button" class="sign-in" value="登录" onclick="go_login();">
-				<input type="reset" class="reset" value="重置">
-                <div style=" float: left;margin-top: 30px;margin-left: 40px">
-                    <a href="{% url 'user:registPage' %}" style="color: rgba(48,48,49,0.71);" target="_blank">注册</a></div>
-                <div style=" float: right;margin-top: 30px;margin-right: 40px">
-                    <a href="{% url 'user:forgetPwdPage' %}" style="color: rgba(48,48,49,0.71);" target="_blank">忘记密码？</a></div>
-				<div class="clear"></div>
-			</div>
+
+{#			<input type="email" name="email" value="邮箱" id="user_email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '邮箱';} check_email()">#}
+            <input type="hidden" name = "checkEmail" id="checkEmail" value="{{ checkEmail }}">
+            <div style="text-align: center;color: #453670;font-size: 26px;">
+                {% if checkEmail %}
+                {{ checkEmail }}
+                {% endif %}</div>
+            <input type="password" name="password" value="......" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '......';}">*
+			<input type="button" class="register" value="提交" id="regist" onclick="go_check()">
+            <span style="text-align: center;display: none;" id="change_ok">修改密码成功！</span>
 		</form>
 	</div>
-
 	<div class="clear"></div>
 </div>
 <div class="footer">
 	<p>Copyright &copy;  <a href="http://www.baizhiedu.com/" target="_blank" title="百知教育">百知教育</a></p>
 </div>
 
-<script>
-    function go_login() {
 
+<script>
+{#    异步注册#}
+    function go_check() {
         $.ajax({
+
             type:'post',
-            dataType:'json',
-            url:'{% url "user:loginLogic" %}',
+            dateType:'json',
+            url:'{% url "user:changePwd" %}',
             data:new FormData($('#forms').get(0)),
             success:function (a) {
-                console.log(a)
-                if(a==1){location.href = '{% url "sys_main:sys_main" %}'}
-                else {alert(' faild!');}
+                if(a==1){
 
+                    $('#change_ok').css('display','inline-block');
+                    setTimeout(location.href='{% url "user:loginPage" %}',3000);
+                }else {alert('修改失败，请尝试重新修改！');}
             },
             processData:false,   //进制序列化data
             contentType:false,   //
         });
     }
 
-
 </script>
+
+
 
 </body>
 </html>

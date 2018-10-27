@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>report_pie</title>
+    <script src="{% static 'scripts/echarts.min.js' %}"></script>
+</head>
+<body>
+    <h2 align="center">招聘信息图</h2>
+
+<div style="margin: auto;width: 70%;margin-top: 80px">
+{#    北京#}
+    <div id="pie" style="width: 400px;height:300px; margin: auto;float: left"></div>
+    <script>
+
+        echarts.init(document.getElementById('pie')).setOption({
+			title: {
+                text: '北京招聘人数比例'
+            },
+			//决定在获取鼠标焦点的时候，是否提示数据
+            tooltip: {},
+            //图表数据填充
+            legend: {data:['招聘数量']},
+			series: {
+				//填充类型
+                type: 'pie',
+				//填充数据
+                data: [
+                    {name: 'python web', value: {{bj_web}}},
+                    {name: '大数据', value: {{bj_bigdata}}},
+                    {name: '爬虫', value: {{bj_spider}}},
+					{name: 'AI', value: {{bj_ai}}},
+                ],
+				//配置饼状图的形状
+				//roseType:'radius'
+            }
+        });
+    </script>
+{#    上海#}
+    <div id="bar" style="width: 450px;height:300px; margin: auto;float: right"></div>
+    <script>
+
+        echarts.init(document.getElementById('bar')).setOption({
+			title: {
+                text: '上海招聘人数比例'
+            },
+			//决定在获取鼠标焦点的时候，是否提示数据
+            tooltip: {},
+            xAxis: {
+                        data: ["pythonweb","大数据","爬虫","AI"]
+                        },
+            yAxis: {},
+            //图表数据填充
+            legend: {data:['招聘数量']},
+			series: {
+				//填充类型
+                name:'招聘数量',
+                type: 'bar',
+                data: [ {{sh_web}}, {{sh_bigdata}},{{sh_spider}},{{sh_ai}} ],
+
+            }
+        });
+
+        </script>
+{#    地图#}
+    <div id="main" style="width: 450px;height:300px; margin: auto;float: left"></div>
+	 <script >
+
+		echarts.init(document.getElementById('main')).setOption({
+			title: {
+                text: 'Python招聘信息地址分布图'
+            },
+			tooltip: {},
+			series: [{
+				name:'招聘量',
+				type: 'map',
+				map: 'china',
+				 data:[
+                {name: '北京',value: Math.round(Math.random()*1000)},
+                {name: '天津',value: Math.round(Math.random()*1000)},
+                {name: '上海',value: Math.round(Math.random()*1000)},
+                {name: '重庆',value: Math.round(Math.random()*1000)},
+                {name: '河北',value: Math.round(Math.random()*1000)},
+                {name: '河南',value: Math.round(Math.random()*1000)},
+                {name: '云南',value: Math.round(Math.random()*1000)},
+                {name: '辽宁',value: Math.round(Math.random()*1000)},
+                {name: '黑龙江',value: Math.round(Math.random()*1000)},
+                {name: '湖南',value: Math.round(Math.random()*1000)},
+                {name: '安徽',value: Math.round(Math.random()*1000)},
+                {name: '山东',value: Math.round(Math.random()*1000)},
+                {name: '新疆',value: Math.round(Math.random()*1000)},
+                {name: '江苏',value: Math.round(Math.random()*1000)},
+                {name: '浙江',value: Math.round(Math.random()*1000)},
+                {name: '江西',value: Math.round(Math.random()*1000)},
+                {name: '湖北',value: Math.round(Math.random()*1000)},
+                {name: '广西',value: Math.round(Math.random()*1000)},
+                {name: '甘肃',value: Math.round(Math.random()*1000)},
+                {name: '山西',value: Math.round(Math.random()*1000)},
+                {name: '内蒙古',value: Math.round(Math.random()*1000)},
+                {name: '陕西',value: Math.round(Math.random()*1000)},
+                {name: '吉林',value: Math.round(Math.random()*1000)},
+                {name: '福建',value: Math.round(Math.random()*1000)},
+                {name: '贵州',value: Math.round(Math.random()*1000)},
+                {name: '广东',value: Math.round(Math.random()*1000)},
+                {name: '青海',value: Math.round(Math.random()*1000)},
+                {name: '西藏',value: Math.round(Math.random()*1000)},
+                {name: '四川',value: Math.round(Math.random()*1000)},
+                {name: '宁夏',value: Math.round(Math.random()*1000)},
+                {name: '海南',value: Math.round(Math.random()*1000)},
+                {name: '台湾',value: Math.round(Math.random()*1000)},
+                {name: '香港',value: Math.round(Math.random()*1000)},
+                {name: '澳门',value: Math.round(Math.random()*1000)}
+            ]
+			}]
+		});
+    </script>
+{#    折线#}
+    	<div id="mains1" style="width: 450px;height:300px; margin: auto;float: left"></div>
+	 <script >
+	echarts.init(document.getElementById('mains1')).setOption({
+    title:{text:'北京四大职位分布：'},
+    xAxis: {
+        type: 'category',
+        data: ['python', '大数据', '爬虫', 'AI']
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [{
+        data: [{{sh_web}}, {{sh_bigdata}},{{sh_spider}},{{sh_ai}}],
+        type: 'line'
+    }]
+	});
+	</script>
+
+
+</div>
+
+
+
+
+</body>
+</html>
