@@ -114,7 +114,7 @@ def changePwdPage(request):
 
 def changePwd(request):
     '''
-    修改新密码
+    修改 新密码
     :param request:
     :return:
     '''
