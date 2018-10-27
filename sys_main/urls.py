@@ -19,6 +19,9 @@ urlpatterns = [
     path('add_logic/',views.add_logic,name='add_logic'),
     path('map_page/',views.map_page,name='map_page'),
     path('get_map_datas/',views.get_map_datas,name='get_map_datas'),
+    path('line_page/',views.line_stack_page,name='line_page'),
+    path('line_pic/',views.line_stack,name='line_pic'),
+
 
 ]
 
