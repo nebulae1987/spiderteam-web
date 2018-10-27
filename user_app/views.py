@@ -25,7 +25,7 @@ def loginLogic(request):
     try:
         user = User.objects.filter(username=username,password=password)
         if user:
-            request.session['login'] = 1    # 登录成功后创建登录状态session
+            request.session['login'] = 1    #  登录成功后创建登录状态session
             return HttpResponse('1')
         else:
             return HttpResponse('0')
