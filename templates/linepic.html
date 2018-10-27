@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>折线图</title>
+    <script src="{% static 'scripts/jquery/jquery-1.7.1.js' %}"></script>
+    <script src="{% static 'echarts/echarts.min.js' %}"></script>
+</head>
+<body>
+    <div id="line" style="height: 600px;width: 800px">
+        <script type="text/javascript">
+            var myChart = echarts.init(document.getElementById('line'));
+            $.get('{% url 'sys_main:line_pic' %}').done(function (data) {
+                console.log()
+                myChart.setOption({
+                        title: {
+                            text: '北上广深四大职业招聘数量图'
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data:['北京','上海','广州','深圳']
+                        },
+                        grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        toolbox: {
+                            feature: {
+                                saveAsImage: {}
+                            }
+                        },
+                        xAxis: {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: ['AI','python web','大数据','爬虫']
+                        },
+                        yAxis: {
+                            type: 'value'
+                        },
+                        series: [
+                            {
+                                name:'北京',
+                                type:'line',
+                                stack: '总量',
+                                data:[data['data']['北京']['AI'],data['data']['北京']['python web'] ,data['data']['北京']['大数据'],data['data']['北京']['爬虫']]
+                            },
+                            {
+                                name:'上海',
+                                type:'line',
+                                stack: '总量',
+                                data:[data['data']['上海']['AI'],data['data']['上海']['python web'] ,data['data']['上海']['大数据'],data['data']['上海']['爬虫']]
+                            },
+                            {
+                                name:'广州',
+                                type:'line',
+                                stack: '总量',
+                                data:[data['data']['广州']['AI'],data['data']['广州']['python web'] ,data['data']['广州']['大数据'],data['data']['广州']['爬虫']]
+                            },
+                            {
+                                name:'深圳',
+                                type:'line',
+                                stack: '总量',
+                                data:[data['data']['深圳']['AI'],data['data']['深圳']['python web'] ,data['data']['深圳']['大数据'],data['data']['深圳']['爬虫']]
+                            }
+                        ]
+                });
+});
+        </script>
+    </div>
+</body>
+<script src=""></script>
+</html>
