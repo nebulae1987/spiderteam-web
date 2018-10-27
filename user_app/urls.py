@@ -19,5 +19,5 @@ urlpatterns = [
     path('forgetLogic',views.forgetLogic,name = 'forgetLogic'),     #忘记密码验证
     path('changePwdPage',views.changePwdPage,name = 'changePwdPage'),  #修改密码页面
     path('changePwd',views.changePwd,name = 'changePwd'),  #修改密码
-    path('index',views.index,name = 'index'),  #修改密码
+    path('index',views.index,name = 'index'),               #修改密码
 ]
