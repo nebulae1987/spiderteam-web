@@ -25,7 +25,7 @@ SECRET_KEY = '%b52366+r@o-!@dlb8fiafk+g6)h%scgq%uwh6(-#rg8*89&c3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'sys_main',
+    'user_app',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'myMiddle.ToLogin',
 ]
 
 ROOT_URLCONF = 'spider_team_project.urls'
@@ -77,8 +79,13 @@ WSGI_APPLICATION = 'spider_team_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'spider',
+        'USER':'root',
+        'PASSWORD':'666666',
+        'HOST':'localhost',
+        'PORT':3306
+
     }
 }
 
@@ -105,19 +112,22 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-Hans'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS=[os.path.join(BASE_DIR,'static')]
+MEDIAROOT = os.path.join(BASE_DIR,'media')
+STATICFILES_DIRS=[os.path.join(BASE_DIR,'static'),MEDIAROOT]
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
