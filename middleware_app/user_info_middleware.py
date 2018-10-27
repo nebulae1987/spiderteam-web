@@ -7,16 +7,29 @@
 # @Software: PyCharm
 import happybase
 from django.http import HttpResponseForbidden
+from django.shortcuts import render
 from django.utils.deprecation import MiddlewareMixin
 import time, re, urllib
 from urllib import request
+import MySQLdb
+
 
 class MyMiddleware2(MiddlewareMixin):
+    pre_ip = ''
+    count = 0
+    flag = 0
     # 每次请求都会获取请求的信息（ip等等）
-    pre_ip=''
-    count=0
-    flag=0
+
     def process_request(self, request):
+        self.conn = MySQLdb.Connect(
+            host='192.168.0.99',
+            port=3306,
+            user='root',
+            password='123456',
+            db='spiderteam',
+            charset='utf8'
+        )
+        self.cursor = self.conn.cursor()
         # 获得用户的访问时间
         request_time = time.strftime('%Y-%m-%d %H:%M:%S')
         datas = request.META
@@ -40,13 +53,20 @@ class MyMiddleware2(MiddlewareMixin):
             ip = datas['REMOTE_ADDR']
         except Exception:
             ip = datas['HTTP_X_FORWARDED_FOR']
-        # try:
 
         ipaddr = ip
+        #去表里查询获得的ip有没有存在于被封ip的表里
+        sql='select ip from t_forbiddend_ip where ip=%s'
+        self.cursor.execute(sql,[ipaddr])
+        pp=self.cursor.fetchall()
+        if pp:
+            #如果存在，直接返回登录页面
+            return render(request, "login.html")
+        time_s=0
         if self.pre_ip=='':
             self.pre_ip=ipaddr
             self.flag=1
-            time_s=time.time()
+            self.time_s=time.time()
         elif self.pre_ip==ipaddr:
             self.count += 1
         else:
@@ -55,10 +75,16 @@ class MyMiddleware2(MiddlewareMixin):
             self.flag=0
         if self.count==300:
             time_e=time.time()
-            time_u=time_e-time_s
+            time_u=time_e-self.time_s
+            print(time_u)
             if time_u<300:
-                return HttpResponseForbidden('<h1 style="text-align:center;margin-top:20px;">检测到您的ip异常，请稍后再试</h1>')
+                print('++++++++++++++')
+                #将可疑ip存到被封ip表
+                sql='insert into t_forbiddend_ip(ip) VALUES (%s)'
+                self.cursor.execute(sql,[self.pre_ip])
+                return render(request,"login.html")
         print('ip:', ipaddr)
+        print('count:',self.count)
         # 根据ip获得用户详细信息（所在城市等）
         if ipaddr != "" or ipaddr != 'exit':
             print('符合判断条件，进入程序')
