@@ -40,8 +40,10 @@ conn.open()
 table = conn.table('spiderteam:t_logs')
 # query="RowFilter(=,'substring:127.0.0.1')"
 t=table.scan()
+# print(list(t))
+l=[]
 for i in t:
-    print(bytes.decode(i[1]['info:request_time']))
+    print(type(i[0].decode('utf-8')))
 
 
 
