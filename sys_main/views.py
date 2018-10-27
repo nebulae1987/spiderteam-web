@@ -10,16 +10,20 @@ from sys_main.models import Recruit
 
 
 def page_list(request):
-    return render(request,'main.html')
+    return render(request, 'main.html')
+
+
 def introduce_page(request):
-    return render(request,'introduce.html')
+    return render(request, 'introduce.html')
+
+
 def meue_page(request):
-    request.session['login']='login'
+    request.session['login'] = 'login'
     page_num = request.GET.get('page_num')
     city = request.GET.get('city')
     job = request.GET.get('job')
-    page_chooise=request.GET.get('page_chooise')
-    page_val=request.GET.get('page_val')
+    page_chooise = request.GET.get('page_chooise')
+    page_val = request.GET.get('page_val')
     rec = Recruit.objects.filter().values()
     if city:
         rec = rec.filter(work_addr__contains=city)
@@ -31,21 +35,23 @@ def meue_page(request):
     login = request.session.get('login')
 
     if login:
-        conn = happybase.Connection(host='192.168.0.99',port=9090)
-        table=conn.table('spiderteam:t_recruit')
-        query_str=None
+        conn = happybase.Connection(host='192.168.0.99', port=9090)
+        table = conn.table('spiderteam:t_recruit')
+        query_str = None
         if city and job:
+
             query_str = "RowFilter (=,'regexstring:"+city+".*:.*"+job+".*')"
+
         elif job:
-            query_str = "RowFilter (=,'substring:"+job+"')"
+            query_str = "RowFilter (=,'substring:" + job + "')"
         elif city:
             query_str = "RowFilter (=,'substring:" + city + "')"
         datas = table.scan(filter=query_str)
-        result_dict={}
-        for k,v in datas:
-            for x ,y in v.items():
-                key = str(x,'utf-8')
-                result_dict[key[7:]] = str(y,'utf-8')
+        result_dict = {}
+        for k, v in datas:
+            for x, y in v.items():
+                key = str(x, 'utf-8')
+                result_dict[key[7:]] = str(y, 'utf-8')
             rec.append(result_dict)
     pagtor = Paginator(rec, per_page=10)
     if not page_num:
@@ -56,11 +62,16 @@ def meue_page(request):
 def add_page(request):
     return render(request,'add.html')
 #存储招聘信息
+    return render(request, 'menu.html', {'page': page, 'page_chooise': page_chooise, 'page_val': page_val})
+def add_page(request):
+    return render(request, 'add.html')
+
+
 def add_logic(request):
     position = request.POST.get('position')
     salary = request.POST.get('price')
-    if salary =='0':
-        salary='面议'
+    if salary == '0':
+        salary = '面议'
     elif salary == '1':
         salary = '1000元以下'
     elif salary == '2':
@@ -80,8 +91,8 @@ def add_logic(request):
 
     company = request.POST.get('company')
     experience = request.POST.get('work_years')
-    if experience =='0':
-        experience='不限'
+    if experience == '0':
+        experience = '不限'
     elif experience == '1':
         experience = '1年以内'
     elif experience == '2':
@@ -113,7 +124,8 @@ def add_logic(request):
     main_business = request.POST.get('main_business')
     com_net = request.POST.get('com_net')
     department = request.POST.get('department')
-    print(position,salary,company,experience,education,work_addr,company_size,job_info,main_business,com_net,department)
+    print(position, salary, company, experience, education, work_addr, company_size, job_info, main_business, com_net,
+          department)
     conn = happybase.Connection(host='192.168.0.99', port=9090)
     table = conn.table('spiderteam:t_recruit')
     # rowkey 地区 职位 网站 公司 薪资
@@ -121,9 +133,36 @@ def add_logic(request):
     table.put(rowkey, {"common:position": position, "common:company": company, "common:salary": salary,
                        "common:job_info": job_info, "common:experience": experience,
                        "common:education": education, "common:work_addr": work_addr, "common:department": department,
-                       "common:company_size": company_size, "common:main_business": main_business, "common:com_net": com_net})
+                       "common:company_size": company_size, "common:main_business": main_business,
+                       "common:com_net": com_net})
 
-    return render(request,'add.html')
+    return render(request, 'add.html')
+
+def line_stack_page(request):
+    return render(request,'linepic.html')
+
+def line_stack(request):
+    print('this is line_stack view')
+    conn = happybase.Connection(host='192.168.0.99', port=9090)
+    table = conn.table('spiderteam:t_recruit')
+    data = table.scan()
+    l = []
+    city_list=['北京','上海','广州','深圳']
+    job_list=['爬虫','大数据','AI','python web']
+    dict = {'北京': {'爬虫': 0, '大数据': 0, 'AI': 0, 'python web': 0}, '上海': {'爬虫': 0, '大数据': 0, 'AI': 0, 'python web': 0},
+            '广州': {'爬虫': 0, '大数据': 0, 'AI': 0, 'python web': 0}, '深圳': {'爬虫': 0, '大数据': 0, 'AI': 0, 'python web': 0}}
+    for i in data:
+        print(i[0].decode('utf-8'))
+        l.append(i[0].decode('utf-8'))
+    for j in l:
+        for c in city_list:
+            if c in j.split(':')[0]:
+                for d in job_list:
+                    if d in j.split(':')[1]:
+                        dict[c][d]+=1
+    print(dict)
+
+    return JsonResponse({'data':dict},safe=False)
 
 #ip地址分布报表页面
 def map_page(request):
