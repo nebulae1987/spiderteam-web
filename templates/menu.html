@@ -10,11 +10,19 @@
 <script type="text/javascript" src="{% static 'scripts/fancybox/jquery.fancybox-1.3.4.js' %}"></script>
 <script type="text/javascript" src="{% static 'scripts/fancybox/jquery.fancybox-1.3.4.pack.js' %}"></script>
 <link rel="stylesheet" type="text/css" href="{% static 'style/authority/jquery.fancybox-1.3.4.css' %}" media="screen"></link>
-<script type="text/javascript" src="{% static 'scripts/artDialog/artDialog.js?skin=default' %}"></script>
+<script type="text/javascript" src="{% static 'scripts/artDialog/artDialog.js?skin=default'%}"></script>
 <title>百智招聘</title>
 <script type="text/javascript">
 </script>
 <style>
+    .mi {
+width: 200px;
+              display: -webkit-box;
+             -webkit-box-orient: vertical;
+             -webkit-line-clamp: 3;
+            overflow: hidden;
+}
+
 </style>
 </head>
 <body>
@@ -27,28 +35,14 @@
 					<div id="box_border">
 						<div id="box_top">搜索</div>
 						<div id="box_center">
-							<select name="fangyuanEntity.fyXqCode" id="fyXq" class="ui_select01" onchange="getFyDhListByFyXqCode();">
+							<select name="fangyuanEntity.fyXqCode" id="fyXq" class="ui_select01" >
                                 <option value=""
                                 >--请选择--</option>
-                                <option value="cs">城市</option>
-                                <option value="zw">职位</option>
+                                <option value="city" {% if page_chooise == 'city' %}selected{% endif %}>城市</option>
+                                <option value="job" {% if page_chooise == 'job' %}selected{% endif %}>职位</option>
                             </select>
-							<input type="text" id="fyZldz" name="fangyuanEntity.fyZldz" class="ui_input_txt02" />
-							<input type="button" value="查询" class="ui_input_btn01" onclick="search();" />
-                            <script src="{% static 'scripts/jquery/jquery-1.7.1.js' %}"></script>
-                            <script>
-                                var se_text = $('#fyZldz').val();
-                                var types = $('#fyXq').val();
-                                function search() {
-                                    alert(1,types,se_text);
-                                    if(types=='cs'){
-                                        location.href = '{% url "sys_main:page_menu" %}?&city='+se_text;
-                                    }else if(types=='zw'){
-                                        location.href = '{% url "sys_main:page_menu" %}?position='+se_text;
-                                    }
-
-                                }
-                            </script>
+							<input type="text" id="fyZldz" name="fangyuanEntity.fyZldz" class="ui_input_txt02" {% if page_val %} value="{{ page_val }}{% endif %}"/>
+							<input type="button" value="查询" class="ui_input_btn01" onclick="search();" /> 
 						</div>
 					</div>
 				</div>
@@ -57,8 +51,6 @@
 				<div class="ui_tb">
 					<table class="table" cellspacing="0" cellpadding="0" width="100%" align="center" border="0">
 						<tr>
-							
-						
 							<th>职位</th>
 							<th>公司</th>
 							<th>月薪</th>
@@ -68,19 +60,22 @@
 							<th>公司地点</th>
 							<th>部门</th>
 						</tr>
-                            {% for row in page %}
-                                <tr>
-                                    <td>{{ row.position }}</td>
-                                    <td>{{ row.company }}</td>
-                                    <td>{{ row.salary }}</td>
-                                    <td>{{ row.job_info }}</td>
-                                    <td>{{ row.experience }}</td>
-                                    <td>{{ row.education }}</td>
-                                    <td>{{ row.work_addr }}</td>
-                                    <td>{{ row.department }}</td>
-                                </tr>
-                            {% endfor %}
-		
+                        {% for foo in page %}
+                            <tr>
+
+								<td>{{ foo.position }}</td>
+								<td>{{ foo.company }}</td>
+								<td>{{ foo.salary }}</td>
+								<td class="mi" title="{{ foo.job_info }}">{{ foo.job_info }}</td>
+								<td>{{ foo.experience }}</td>
+								<td>{{ foo.education }}</td>
+								<td>{{ foo.work_addr }}</td>
+								<td>{{ foo.department }}</td>
+							</tr>
+                        {% endfor %}
+
+
+
 					</table>
 				</div>
 				<div class="ui_tb_h30">
@@ -95,37 +90,39 @@
 					</div>
 					<div class="ui_frt">
 						<!--    如果是第一页，则只显示下一页、尾页 -->
-						
-							<input type="button" value="首页" class="ui_input_btn01" onclick="location.href='{% url 'sys_main:page_menu' %}?num=1&position={{ position }}&city={{ city }}'"/>
-						{% if page.has_previous %}
-                        <input type="button" value="上一页" class="ui_input_btn01" onclick="location.href='{% url 'sys_main:page_menu' %}?num={{ page.previous_page_number }}&position={{ position }}&city={{ city }}'"/>
-						{% endif %}
-                        {% if page.has_next %}
-                        <input type="button" value="下一页" class="ui_input_btn01"
-										onclick="location.href='{% url 'sys_main:page_menu' %}?num={{ page.next_page_number }}&position={{ position }}&city={{ city }}'" />
-						{% endif %}
-                        <input type="button" value="尾页" class="ui_input_btn01"
-								onclick="location.href='{% url 'sys_main:page_menu' %}?num={{ page.paginator.num_pages }}&position={{ position }}&city={{ city }}'" />
+						{% if page.number != 1 %}
+							<input type="button" value="首页" class="ui_input_btn01" onclick="jumpNormalPage(1)"/>
+                        {% endif %}
+                        {% if page.has_previous %}
+							<input type="button" value="上一页" class="ui_input_btn01" onclick="jumpNormalPage({{ page.previous_page_number }});"/>
+                        {% endif %}
+                    {% if page.has_next %}
+							<input type="button" value="下一页" class="ui_input_btn01"
+								onclick="jumpNormalPage({{ page.next_page_number }});" />
+                    {% endif %}
+                    {% if page.number != page.paginator.num_pages %}
+							<input type="button" value="尾页" class="ui_input_btn01"
+								onclick="jumpNormalPage({{ page.paginator.count }});" />
 							<!--     如果是最后一页，则只显示首页、上一页 -->
-						
+						{% endif %}
 						转到第<input type="text" id="jumpNumTxt" class="ui_input_txt01" />页
-							 <input type="button" class="ui_input_btn01" value="跳转" onclick="go_numPage()" />
-
-
-
-
-
+							 <input type="button" class="ui_input_btn01" value="跳转" onclick="jumpInputPage(9);" />
 					</div>
 				</div>
 			</div>
 		</div>
 	</form>
-    <script>
-        function go_numPage() {
-            var num = $('#jumpNumTxt').val();
-            location.href="{% url 'sys_main:page_menu' %}?num="+num+"&position={{ position }}&city={{ city }}";
-        }
-    </script>
-
+<script>
+    function jumpNormalPage(page_num) {
+        var chooice = $('#fyXq').val()
+        var vals = $('#fyZldz').val()
+        window.location.href='{% url 'sys_main:meue_page' %}?page_num='+page_num+'&'+chooice+'='+vals+'&page_chooise='+chooice+'&page_val='+vals
+    }
+    function search() {
+        var chooice = $('#fyXq').val()
+        var vals = $('#fyZldz').val()
+        window.location.href='{% url 'sys_main:meue_page' %}?'+chooice+'='+vals+'&page_chooise='+chooice+'&page_val='+vals
+    }
+</script>
 </body>
 </html>

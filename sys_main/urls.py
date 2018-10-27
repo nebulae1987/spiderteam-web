@@ -12,8 +12,16 @@ from sys_main import views
 
 app_name='sys_main'
 urlpatterns = [
-    path('sys_main/',views.page_list,name='sys_main'),
-    path('page_menu/',views.page_menu,name='page_menu'),
-    path('page_introduce/',views.page_introduce,name='page_introduce'),
+    path('main/',views.page_list,name='main_page'),
+    path('introduce/',views.introduce_page,name='introduce_page'),
+    path('meue/',views.meue_page,name='meue_page'),
+    path('add_page/',views.add_page,name='add_page'),
+    path('add_logic/',views.add_logic,name='add_logic'),
+    path('map_page/',views.map_page,name='map_page'),
+    path('get_map_datas/',views.get_map_datas,name='get_map_datas'),
+    path('line_page/',views.line_stack_page,name='line_page'),
+    path('line_pic/',views.line_stack,name='line_pic'),
+
+
 ]
 

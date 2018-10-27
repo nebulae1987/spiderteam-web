@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="{% static 'scripts/echarts/echarts.js' %}"></script>
+    <script src="{% static 'scripts/echarts/china.js' %}"></script>
+    <script src="{% static 'scripts/echarts/jquery-1.7.2.js' %}"></script>
+</head>
+<body>
+<div id="map" style="width: 600px;height:400px;"></div>
+<script>
+    $(function () {
+        var chart = echarts.init(document.getElementById('map'));
+    chart.setOption({
+        title: {
+            text: 'ip地址分布图'
+        },
+        tooltip: {},
+        series: [{
+            name:'ip地址访问量',
+            type: 'map',
+            map: 'china',
+             data:[]
+        }]
+    });
+    // 异步加载数据
+    $.get('{% url "sys_main:get_map_datas" %}').done(function (data) {
+        console.log(data)
+        // 填入数据
+        chart.setOption({
+            series: [{
+                // 根据名字对应到相应的系列
+                data: data.datas
+            }]
+        });
+    });
+    })
+
+</script>
+</body>
+</html>
